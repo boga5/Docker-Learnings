@@ -3,13 +3,11 @@ FROM maven
 
 #copying SpringMVCXML into container
 COPY Java_Sample_App/SpringMVCSecurityXML /java_app/SpringMVCSecurityXML
-RUN ls java_app/
 
 # Set the Work directory
 WORKDIR /java_app/SpringMVCSecurityXML
 
 # buuild the application
-RUN ls
 RUN mvn clean install 
 
 FROM tomcat:8 
