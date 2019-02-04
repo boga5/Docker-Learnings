@@ -1,0 +1,45 @@
+# NOT WORKING or NOT TRIED or THOUGHT OF
+#Java app as a service and using nginx
+#using official maven image
+#FROM maven:latest
+#
+##copying SpringMVCXML into container
+#COPY Java_Sample_App/SpringMVCSecurityXML /java_app/SpringMVCSecurityXML
+#
+## Set the Work directory
+#WORKDIR /java_app/SpringMVCSecurityXML
+#
+## buuild the application
+#RUN mvn clean install
+
+#ubuntu image
+FROM ubuntu:latest
+
+#install nginx and java
+RUN apt-get update && apt-get install nginx default-jdk curl -y
+
+#setup tomcat
+RUN groupadd tomcat && useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
+
+#install tomcat8
+WORKDIR /tmp
+RUN curl -O http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v8.5.35/bin/apache-tomcat-8.5.35.tar.gz
+RUN mkdir /opt/tomcat && tar xzvf apache-tomcat-8.5.35.tar.gz -C /opt/tomcat --strip-components=1
+RUN cd /opt/tomcat && chgrp -R tomcat /opt/tomcat && chmod -R g+r conf && chmod g+x conf && chown -R tomcat webapps/ work/ temp/ logs/
+
+#creating a systemd service file & starting the timcat service
+#RUN update-java-alternatives -l
+COPY ./tomcat.service /etc/systemd/system/
+RUN systemctl daemon-reload && systemctl start tomcat && systemctl status tomcat
+
+#copy the .war to tomcat folder
+COPY ./Java_Sample_App/SpringMVCSecurityXML/target/SpringMVCSecurityXML.war /var/lib/tomcat8/webapps
+
+#remove the default configuration settings
+RUN rm -rf etc/nginx/conf.d/default.conf
+
+#add the new configuration file
+COPY ./tomcat-nginx.conf etc/nginx/conf.d/tomcat-nginx.conf
+
+#test and reload new configuration
+RUN nginx -t
