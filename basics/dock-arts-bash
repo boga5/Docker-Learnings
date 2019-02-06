@@ -1,0 +1,18 @@
+#GETTING THE ARTIFACTS OUT OF THE CONTAINER using bash
+
+FROM maven
+
+LABEL maintainer="Sunil Boga"
+
+COPY Java_Sample_App/ /boga/
+
+WORKDIR /boga/SpringMVCSecurityXML/
+
+RUN mvn clean install \
+    && mkdir /boga/artifacts 
+
+#In this dockerfile i will be passing the comands while running the container using bash
+#the command will be bash cp /boga/SpringMVCSecurityXML/target/SpringMVCSecurityXML.war /boga/artifacts
+#CMD cp /boga/SpringMVCSecurityXML/target/SpringMVCSecurityXML.war /boga/artifacts
+
+#CMD ["cp","/boga/SpringMVCSecurityXML/target/SpringMVCSecurityXML.war","/boga/artifacts"]

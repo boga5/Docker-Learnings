@@ -1,0 +1,13 @@
+#GETTING THE ARTIFACTS OUT OF THE CONTAINER the whole target folder
+
+FROM maven
+
+LABEL maintainer="Sunil Boga"
+
+COPY Java_Sample_App/ /boga/
+
+RUN cd /boga/SpringMVCSecurityXML \
+    && mvn clean install \
+    && mkdir /boga/artifacts 
+
+CMD cp -r /boga/SpringMVCSecurityXML/target/ /boga/artifacts/
